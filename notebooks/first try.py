@@ -18,7 +18,7 @@ test = tf.keras.preprocessing.image_dataset_from_directory(
 train = train.cache()
 test = test.cache()
 input = layers.Input(shape=(256, 256, 3))
-base_model = tf.keras.applications.EfficientNetB3( input_tensor=input, include_top=True)
+base_model = tf.keras.applications.EfficientNetB3(input_tensor=input, include_top=True)
 model = tf.keras.models.Sequential([
 	layers.BatchNormalization(),
 
