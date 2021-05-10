@@ -3,18 +3,24 @@ import numpy as np
 import os
 from tensorflow.keras import mixed_precision
 from tensorflow.keras import layers
+from cutmix_keras import CutMixImageDataGenerator  # Import CutMix
 
 physical_devices = tf.config.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(physical_devices[0], True)
 policy = mixed_precision.Policy('mixed_float16')
 mixed_precision.set_global_policy(policy)
 
-train = tf.keras.preprocessing.image_dataset_from_directory(
-	directory=r"F:/Pycharm_projects/scientificProject/data/train", label_mode="categorical", batch_size=32,
-	image_size=(256, 256), seed=42)
-test = tf.keras.preprocessing.image_dataset_from_directory(
-	directory=r"F:/Pycharm_projects/scientificProject/data/test", label_mode="categorical", batch_size=32,
-	image_size=(256, 256), seed=42)
+train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
+	rescale=1. / 255,
+)
+
+train = train_datagen.flow_from_directory(
+	directory=r"F:/Pycharm_projects/scientificProject/data/train", class_mode="categorical", batch_size=32,
+	target_size=(256, 256), seed=42, shuffle=True)
+test = train_datagen.flow_from_directory(
+	directory=r"F:/Pycharm_projects/scientificProject/data/test", class_mode="categorical", batch_size=32,
+	target_size=(256, 256), seed=42, shuffle=True)
+
 
 input = layers.Input(shape=(256, 256, 3))
 base_model = tf.keras.applications.ResNet101(input_tensor=input, include_top=True)
