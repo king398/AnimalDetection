@@ -27,6 +27,8 @@ model = tf.keras.models.Sequential([
 	layers.LeakyReLU(),
 	layers.BatchNormalization(),
 	layers.Flatten(),
+	layers.Dense(256),
+	layers.LeakyReLU(),
 	layers.Dense(128),
 	layers.LeakyReLU(),
 	layers.Dense(80, activation="softmax", dtype='float32')
@@ -38,3 +40,4 @@ model.compile(
 	loss=tf.keras.losses.CategoricalCrossentropy(label_smoothing=0.05),
 	metrics=['categorical_accuracy'])
 history = model.fit(train, validation_data=test, epochs=5)
+
