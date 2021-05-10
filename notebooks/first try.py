@@ -11,14 +11,14 @@ policy = mixed_precision.Policy('mixed_float16')
 mixed_precision.set_global_policy(policy)
 
 train = tf.keras.preprocessing.image_dataset_from_directory(
-	directory=r"F:/Pycharm_projects/scientificProject/data/train", label_mode="categorical", batch_size=16,
-	image_size=(512, 512), seed=42)
+	directory=r"F:/Pycharm_projects/scientificProject/data/train", label_mode="categorical", batch_size=32,
+	image_size=(256, 256), seed=42)
 test = tf.keras.preprocessing.image_dataset_from_directory(
-	directory=r"F:/Pycharm_projects/scientificProject/data/test", label_mode="categorical", batch_size=16,
-	image_size=(512, 512), seed=42)
+	directory=r"F:/Pycharm_projects/scientificProject/data/test", label_mode="categorical", batch_size=32,
+	image_size=(256, 256), seed=42)
 train = train.cache()
 test = test.cache()
-input = layers.Input(shape=(512, 512, 3))
+input = layers.Input(shape=(256, 256, 3))
 base_model = tf.keras.applications.ResNet50(include_top=True, weights="imagenet", input_tensor=input)
 model = tf.keras.models.Sequential([
 	layers.BatchNormalization(),
