@@ -4,6 +4,7 @@ import os
 from tensorflow.keras import mixed_precision
 from tensorflow.keras import layers
 from cutmix_keras import CutMixImageDataGenerator  # Import CutMix
+from vit_keras import vit, utils
 
 physical_devices = tf.config.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(physical_devices[0], True)
@@ -15,23 +16,29 @@ train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
 )
 
 train1 = train_datagen.flow_from_directory(
-	directory=r"F:/Pycharm_projects/scientificProject/data/train", class_mode="categorical", batch_size=32,
-	target_size=(256, 256), seed=42, shuffle=True)
+	directory=r"F:/Pycharm_projects/scientificProject/data/train", class_mode="categorical", batch_size=24,
+	target_size=(384, 384), seed=42, shuffle=True)
 train2 = train_datagen.flow_from_directory(
-	directory=r"F:/Pycharm_projects/scientificProject/data/train", class_mode="categorical", batch_size=32,
-	target_size=(256, 256), seed=42, shuffle=True)
+	directory=r"F:/Pycharm_projects/scientificProject/data/train", class_mode="categorical", batch_size=24,
+	target_size=(384, 384), seed=42, shuffle=True)
 test = train_datagen.flow_from_directory(
-	directory=r"F:/Pycharm_projects/scientificProject/data/test", class_mode="categorical", batch_size=32,
-	target_size=(256, 256), seed=42, shuffle=True)
+	directory=r"F:/Pycharm_projects/scientificProject/data/test", class_mode="categorical", batch_size=24,
+	target_size=(384, 384), seed=42, shuffle=True)
 train = CutMixImageDataGenerator(
     generator1=train1,
     generator2=train2,
-    img_size=256,
-    batch_size=32,
+    img_size=384,
+    batch_size=24,
 )
 
-input = layers.Input(shape=(256, 256, 3))
-base_model = tf.keras.applications.ResNet101(input_tensor=input, include_top=True)
+input = layers.Input(shape=(384, 384, 3))
+base_model = vit.vit_b16(
+    image_size=384,
+    activation='softmax',
+    pretrained=True,
+    include_top=True,
+    pretrained_top=True
+)
 model = tf.keras.models.Sequential([
 	layers.BatchNormalization(),
 
@@ -39,7 +46,7 @@ model = tf.keras.models.Sequential([
 	layers.LeakyReLU(),
 	layers.BatchNormalization(),
 	layers.Flatten(),
-	layers.Dense(256),
+	layers.Dense(384),
 	layers.LeakyReLU(),
 	layers.Dense(128),
 	layers.LeakyReLU(),
@@ -51,4 +58,4 @@ model.compile(
 	optimizer=opt,
 	loss=tf.keras.losses.CategoricalCrossentropy(label_smoothing=0.2),
 	metrics=['categorical_accuracy'])
-history = model.fit(train, validation_data=test, epochs=10,steps_per_epoch=705.1875)
+history = model.fit(train, validation_data=test, epochs=10,steps_per_epoch=940.25)
