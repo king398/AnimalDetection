@@ -16,19 +16,19 @@ train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
 )
 
 train1 = train_datagen.flow_from_directory(
-	directory=r"F:/Pycharm_projects/scientificProject/data/train", class_mode="categorical", batch_size=24,
+	directory=r"F:/Pycharm_projects/scientificProject/data/train", class_mode="categorical", batch_size=16,
 	target_size=(384, 384), seed=42, shuffle=True)
 train2 = train_datagen.flow_from_directory(
-	directory=r"F:/Pycharm_projects/scientificProject/data/train", class_mode="categorical", batch_size=24,
+	directory=r"F:/Pycharm_projects/scientificProject/data/train", class_mode="categorical", batch_size=16,
 	target_size=(384, 384), seed=42, shuffle=True)
 test = train_datagen.flow_from_directory(
-	directory=r"F:/Pycharm_projects/scientificProject/data/test", class_mode="categorical", batch_size=24,
+	directory=r"F:/Pycharm_projects/scientificProject/data/test", class_mode="categorical", batch_size=16,
 	target_size=(384, 384), seed=42, shuffle=True)
 train = CutMixImageDataGenerator(
     generator1=train1,
     generator2=train2,
     img_size=384,
-    batch_size=24,
+    batch_size=16,
 )
 
 input = layers.Input(shape=(384, 384, 3))
@@ -58,4 +58,4 @@ model.compile(
 	optimizer=opt,
 	loss=tf.keras.losses.CategoricalCrossentropy(label_smoothing=0.2),
 	metrics=['categorical_accuracy'])
-history = model.fit(train, validation_data=test, epochs=10,steps_per_epoch=940.25)
+history = model.fit(train, validation_data=test, epochs=10,steps_per_epoch=1410.375)
