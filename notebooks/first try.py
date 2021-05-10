@@ -12,30 +12,29 @@ mixed_precision.set_global_policy(policy)
 
 train = tf.keras.preprocessing.image_dataset_from_directory(
 	directory=r"F:/Pycharm_projects/scientificProject/data/train", label_mode="categorical", batch_size=16,
-	image_size=(256, 256), seed=42)
+	image_size=(512, 512), seed=42)
 test = tf.keras.preprocessing.image_dataset_from_directory(
 	directory=r"F:/Pycharm_projects/scientificProject/data/test", label_mode="categorical", batch_size=16,
-	image_size=(256, 256), seed=42)
+	image_size=(512, 512), seed=42)
 train = train.cache()
 test = test.cache()
-input = layers.Input(shape=(256, 256, 3))
-base_model = vit.vit_b16(
-    image_size=256,
-    activation='softmax',
-    pretrained=True,
-    include_top=True,
-    pretrained_top=True
-)
-
+input = layers.Input(shape=(512, 512, 3))
+base_model = tf.keras.applications.ResNet50(include_top=True, weights="imagenet", input_tensor=input)
 model = tf.keras.models.Sequential([
+	layers.BatchNormalization(),
+
 	base_model,
+	layers.LeakyReLU(),
+	layers.BatchNormalization(),
 	layers.Flatten(),
-	layers.Dense(80, activation="softmax")
+	layers.Dense(128),
+	layers.LeakyReLU(),
+	layers.Dense(80, activation="softmax", dtype='float32')
 
 ])
-opt = tf.keras.optimizers.SGD(0.03)
+opt = tf.keras.optimizers.SGD(0.02)
 model.compile(
 	optimizer=opt,
-	loss="categorical_crossentropy",
+	loss=tf.keras.losses.CategoricalCrossentropy(label_smoothing=0.05),
 	metrics=['categorical_accuracy'])
 history = model.fit(train, validation_data=test, epochs=5)
