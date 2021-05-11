@@ -4,8 +4,6 @@ import os
 from tensorflow.keras import mixed_precision
 from tensorflow.keras import layers
 from cutmix_keras import CutMixImageDataGenerator  # Import CutMix
-from tensorflow.keras.models import load_model
-from efficientnet.keras import EfficientNetB0
 
 
 physical_devices = tf.config.list_physical_devices('GPU')
@@ -34,7 +32,8 @@ train = CutMixImageDataGenerator(
 )
 
 input = layers.Input(shape=(384, 384, 3))
-base_model = load_model(r"F:\Pycharm_projects\scientificProject\models\efficientnet-b1_noisy-student_notop.h5",compile=False)
+base_model = tf.keras.applications.ResNet50(weights='imagenet', input_tensor=input, include_top=True)
+
 model = tf.keras.models.Sequential([
 	layers.BatchNormalization(),
 
@@ -42,13 +41,15 @@ model = tf.keras.models.Sequential([
 	layers.LeakyReLU(),
 	layers.BatchNormalization(),
 	layers.Flatten(),
-	layers.Dense(384),
+	layers.Dense(256),
 	layers.LeakyReLU(),
 	layers.Dense(128),
 	layers.LeakyReLU(),
 	layers.Dense(80, activation="softmax", dtype='float32')
 
 ])
+
+
 opt = tf.keras.optimizers.SGD(0.02)
 model.compile(
 	optimizer=opt,
