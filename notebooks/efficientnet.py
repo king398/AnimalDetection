@@ -5,6 +5,7 @@ from tensorflow.keras import mixed_precision
 from tensorflow.keras import layers
 from cutmix_keras import CutMixImageDataGenerator  # Import CutMix
 
+from vit_keras import vit, utils
 
 physical_devices = tf.config.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(physical_devices[0], True)
@@ -32,7 +33,12 @@ train = CutMixImageDataGenerator(
 )
 
 input = layers.Input(shape=(384, 384, 3))
-base_model = tf.keras.applications.ResNet50(weights='imagenet', input_tensor=input, include_top=True)
+base_model = vit.vit_b32(
+	image_size=384,
+	pretrained=True,
+	include_top=True,
+	pretrained_top=True
+)
 
 model = tf.keras.models.Sequential([
 	layers.BatchNormalization(),
@@ -48,11 +54,17 @@ model = tf.keras.models.Sequential([
 	layers.Dense(80, activation="softmax", dtype='float32')
 
 ])
-
-
+checkpoint_filepath = r"F:/Pycharm_projects/scientificProject/models/temp"
+model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
+	filepath=checkpoint_filepath,
+	save_weights_only=True,
+	monitor='val_categorical_accuracy',
+	mode='max',
+	save_best_only=True)
 opt = tf.keras.optimizers.SGD(0.02)
 model.compile(
 	optimizer=opt,
 	loss=tf.keras.losses.CategoricalCrossentropy(label_smoothing=0.2),
 	metrics=['categorical_accuracy'])
-history = model.fit(train, validation_data=test, epochs=10, steps_per_epoch=1410.375)
+history = model.fit(train, validation_data=test, epochs=10, steps_per_epoch=1410.375,
+                    callbacks=model_checkpoint_callback)
