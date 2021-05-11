@@ -32,7 +32,7 @@ train = CutMixImageDataGenerator(
 )
 
 input = layers.Input(shape=(384, 384, 3))
-base_model = vit.vit_b16(
+base_model = vit.vit_b32(
     image_size=384,
     activation='softmax',
     pretrained=True,
