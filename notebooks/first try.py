@@ -24,7 +24,7 @@ train2 = train_datagen.flow_from_directory(
 	directory=r"F:/Pycharm_projects/scientificProject/data/train", class_mode="categorical", batch_size=16,
 	target_size=(384, 384), seed=42, shuffle=True)
 test = train_datagen.flow_from_directory(
-	directory=r"F:/Pycharm_projects/scientificProject/data/test", class_mode="categorical", batch_size=16,
+	directory=r"F:/Pycharm_projects/scientificProject/data/valid", class_mode="categorical", batch_size=16,
 	target_size=(384, 384), seed=42, shuffle=True)
 train = CutMixImageDataGenerator(
 	generator1=train1,
@@ -52,6 +52,6 @@ model = tf.keras.models.Sequential([
 opt = tf.keras.optimizers.SGD(0.02)
 model.compile(
 	optimizer=opt,
-	loss=tf.keras.losses.CategoricalCrossentropy(label_smoothing=0.2),
+	loss=tf.keras.losses.CategoricalCrossentropy(label_smoothing=0.15),
 	metrics=['categorical_accuracy'])
 history = model.fit(train, validation_data=test, epochs=10, steps_per_epoch=1410.375)

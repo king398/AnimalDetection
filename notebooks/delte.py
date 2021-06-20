@@ -1,9 +1,9 @@
 import shutil
 import os
 import tensorflow as tf
-file = tf.io.gfile.glob(str("F:\Pycharm_projects\scientificProject\data"+'/*/*/Label'))
 
-
+file = tf.io.gfile.glob("/content/train/" + '*/*/*.txt')
 
 for i in file:
-	shutil.rmtree(i)
+	print(i)
+	os.remove(i)
