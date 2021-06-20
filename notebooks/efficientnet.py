@@ -18,23 +18,23 @@ train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
 
 train1 = train_datagen.flow_from_directory(
 	directory=r"/content/train", class_mode="categorical", batch_size=12,
-	target_size=(512, 512), seed=42, shuffle=True)
+	target_size=(384, 384), seed=42, shuffle=True)
 train2 = train_datagen.flow_from_directory(
 	directory=r"/content/train", class_mode="categorical", batch_size=12,
-	target_size=(512, 512), seed=42, shuffle=True)
+	target_size=(384, 384), seed=42, shuffle=True)
 test = train_datagen.flow_from_directory(
 	directory=r"/content/test", class_mode="categorical", batch_size=12,
-	target_size=(512, 512), seed=42, shuffle=True)
+	target_size=(384, 384), seed=42, shuffle=True)
 train = CutMixImageDataGenerator(
 	generator1=train1,
 	generator2=train2,
-	img_size=512,
+	img_size=384,
 	batch_size=12,
 )
 
-input = layers.Input(shape=(512, 512, 3))
+input = layers.Input(shape=(384, 384, 3))
 base_model = vit.vit_b16(
-	image_size=512,
+	image_size=384,
 	activation="softmax",
 	pretrained=True,
 	include_top=True,
@@ -42,8 +42,7 @@ base_model = vit.vit_b16(
 )
 classes = utils.get_imagenet_classes()
 url = r'/content/train/Lion/0b42c367365139bb.jpg'
-image = utils.read(url, 512)
-attention_map = visualize.attention_map(model=base_model, image=image)
+image = utils.read(url, 384)
 attention_map = visualize.attention_map(model=base_model, image=image)
 print('Prediction:', classes[
 	base_model.predict(vit.preprocess_inputs(image)[np.newaxis])[0].argmax()]
